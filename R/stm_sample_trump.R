@@ -32,7 +32,7 @@ input_file    <- qq("@{data_path}echantillon_god_emperor_trump.csv")
 qqcat("Load data from @{input_file}")
 
 df        <- read.csv(input_file)
-
+dim(df)
 # les 2 premiere lignes
 df[1:2,]
 
@@ -50,7 +50,7 @@ df[1:2,]
 
 qqcat("pre processing\n")
 
-processed <- textProcessor(df[,'content'],
+processed <- textProcessor(df[,'message'],
                            lowercase        = TRUE,
                            removestopwords  = TRUE,
                            removenumbers    = TRUE,
@@ -80,19 +80,18 @@ out   <- prepDocuments(processed$documents, processed$vocab, processed$meta,
 
 # Tranformer les variables externes en Factor
 meta  <- out$meta
-meta$journal  <- as.factor(meta$journal)
-meta$rubrique <- as.factor(meta$rubrique)
+meta$post_type  <- as.factor(meta$post_type)
 
 # ------------------------------------------------------------------------------
 #  Recherche du nombre optimal de topics avec searchK 
 # ------------------------------------------------------------------------------
 
 
-n_topics = seq(from = 20, to = 50, by = 1)
+n_topics = seq(from = 20, to = 50, by = 5)
 
 gridsearch <- searchK(out$documents, out$vocab,
                       K = n_topics,
-                      prevalence  =~ journal+ rubrique ,
+                      # prevalence  =~ journal+ rubrique ,
                       reportevery = 10,
                       # max.em.its = maxemits,
                       emtol       = 1.5e-4,
@@ -117,8 +116,8 @@ text(gridsearch$results$semcoh, gridsearch$results$exclus, labels=gridsearch$res
 #  max.em.its: nombre maximal d'iterations
 # ------------------------------------------------------------------------------
 qqcat("fit stm\n")
-fit <- stm(out$documents, out$vocab, 0,
-           prevalence  =~ journal + rubrique,
+fit <- stm(out$documents, out$vocab, 25,
+           # prevalence  =~ journal + rubrique,
            data        = meta,
            reportevery = 10,
            max.em.its  = 100,
@@ -126,7 +125,7 @@ fit <- stm(out$documents, out$vocab, 0,
            init.type   = "Spectral",
            seed        = 1)
 
-# fit_0 <-fit
+fit_25 <-fit
 qqcat("stm done\n")
 
 # ----------------------------------- ------------------------------------------
@@ -134,19 +133,13 @@ qqcat("stm done\n")
 #  Frex, ... sont differentes façon d'associer les mots dans les topics
 #  En general je choisi Frex ou ...
 # ------------------------------------------------------------------------------
-print( labelTopics(fit, n=10) )
+print( labelTopics(fit,14, n=10) )
 
 # ------------------------------------------------------------------------------
 # Importance des topics
 # ------------------------------------------------------------------------------
 
-plot.STM( fit,
-          type = "summary",
-          labeltype= 'frex',
-          # topics = c(24,42),
-          main= 'Importance des topics',
-          n = 10
-)
+plot(fit, labeltype=c("prob"), main = 'Topic Most Frequent Words',bty="n", n= 5)
 
 # sauvegarder
 # fit_0 <- fit
@@ -158,37 +151,46 @@ plot.STM( fit,
 topic_corr = topicCorr(fit, method = "simple", cutoff = 0.1)
 plot(topic_corr, topics = c())
 
+# Comparaison des mots entre 2 topics
+plot.STM( fit,
+          type = "perspectives",
+          labeltype= 'frex',
+          topics = c(5,2),
+          main= 'Comparaison entre 2 topics',
+          n = 5
+)
+
+
+
 # ------------------------------------------------------------------------------
 # Qualité des topics
 # ------------------------------------------------------------------------------
 topicQuality(model=fit, documents=out$documents, main='Topic Quality',bty="n")
 
-plot(fit, labeltype=c("frex"), main = 'Topic Most Frequent Words',bty="n", n= 5)
 
 # ------------------------------------------------------------------------------
 # Nuage Nuage cloud(fit, numero du topic)
 # ------------------------------------------------------------------------------
 
-cloud(fit, 12)
+cloud(fit, 6)
 
 # ------------------------------------------------------------------------------
 # Visualisation avec stmBrowser
 # ------------------------------------------------------------------------------
 
-stmBrowser(fit, data=out$meta, c("journal"), text="content", labeltype='frex', n = 4)
+stmBrowser(fit, data=out$meta,  text="message", labeltype='frex', n = 4)
 
 # ------------------------------------------------------------------------------
 # Quels sont les documents les plus representatifs d'un topic?
 # ------------------------------------------------------------------------------
 
-findThoughts(fit, texts = out$meta$content, topics = 22, n = 3 )
+findThoughts(fit, texts = out$meta$message, topics = 14, n = 5 )
 
 # ------------------------------------------------------------------------------
 # Quels topics contiennent un mot ou une serie de mots
 # ------------------------------------------------------------------------------
 
-findTopic(fit, c("facebook"), n = 20)
-
+findTopic(fit, c("pussy"), n = 20)
 
 # ------------------------------------------------------------------------------
 # Sauvegarder l'environnement avec toutes les variables

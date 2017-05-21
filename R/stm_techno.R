@@ -15,6 +15,10 @@ library('Rtsne')
 library('SnowballC')
 library('GetoptLong')
 
+# activer pour charger l'environnement
+# load('techno_topic_models.Rdata')
+# fit <- fit_20
+
 qq.options("cat_prefix" = function(x) format(Sys.time(), "\n[%H:%M:%S] "))
 
 # ------------------------------------------------------------------------------
@@ -123,8 +127,8 @@ fit <- stm(out$documents, out$vocab, 0,
             prevalence  =~ journal + rubrique,
             data        = meta,
             reportevery = 10,
-            max.em.its  = 100,
-            emtol       = 1.0e-4,
+            # max.em.its  = 100,
+            emtol       = 1.5e-4,
             init.type   = "Spectral",
             seed        = 1)
 
@@ -171,7 +175,7 @@ plot(fit, labeltype=c("frex"), main = 'Topic Most Frequent Words',bty="n", n= 5)
 # Nuage Nuage cloud(fit, numero du topic)
 # ------------------------------------------------------------------------------
 
-cloud(fit, 12)
+cloud(fit, 6)
 
 # ------------------------------------------------------------------------------
 # Visualisation avec stmBrowser
