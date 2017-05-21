@@ -31,7 +31,7 @@ dtypes = {
             'tagged_id_list':str
         }
 
-df = pd.read_csv('../data/main_fbtge.csv', low_memory=False, dtype = dtypes ).sample(frac = frac)
+df = pd.read_csv('../data/main_fbget.csv', low_memory=False, dtype = dtypes ).sample(frac = frac)
 print("Data loaded in {0:.2f}s".format(time.time() - start_time))
 
 # ---------------------------------------------------------------------
