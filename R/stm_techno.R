@@ -23,8 +23,8 @@ qq.options("cat_prefix" = function(x) format(Sys.time(), "\n[%H:%M:%S] "))
 #  set input file
 # ------------------------------------------------------------------------------
 
-setwd("/Users/alexisperrier/amcp/upem/R")
-data_path <- '/Users/alexisperrier/amcp/upem/data/'
+setwd("/Users/alexisperrier/amcp/upem-topic-modeling/R")
+data_path <- '/Users/alexisperrier/amcp/upem-topic-modeling/data/'
 
 input_file    <- qq("@{data_path}techno.csv")
 
@@ -35,7 +35,7 @@ qqcat("Load data from @{input_file}")
 
 df        <- read.csv(input_file)
 
-# les 10 premiere lignes
+# les 2 premiere lignes
 df[1:2,]
 
 # ------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ processed <- textProcessor(df[,'content'],
 # ------------------------------------------------------------------------------
 
 thresh.lower  <- 50
-thresh.upper  <- 300
+# thresh.upper  <- 300
 
 out   <- prepDocuments(processed$documents, processed$vocab, processed$meta,
                        lower.thresh = thresh.lower)
@@ -86,9 +86,11 @@ meta$journal  <- as.factor(meta$journal)
 meta$rubrique <- as.factor(meta$rubrique)
 
 # ------------------------------------------------------------------------------
+#  Recherche du nombre optimal de topics avec searchK 
 # ------------------------------------------------------------------------------
 
-n_topics = seq(from = 20, to = 50, by = 2)
+
+n_topics = seq(from = 20, to = 50, by = 1)
 
 gridsearch <- searchK(out$documents, out$vocab,
                       K = n_topics,
@@ -122,10 +124,11 @@ fit <- stm(out$documents, out$vocab, 0,
             data        = meta,
             reportevery = 10,
             max.em.its  = 100,
-            emtol       = 1.5e-4,
+            emtol       = 1.0e-4,
             init.type   = "Spectral",
             seed        = 1)
 
+# fit_0 <-fit
 qqcat("stm done\n")
 
 # ----------------------------------- ------------------------------------------
@@ -138,53 +141,60 @@ print( labelTopics(fit, n=10) )
 # ------------------------------------------------------------------------------
 # Importance des topics
 # ------------------------------------------------------------------------------
-# ------------------------------------------------------------------------------
-# Importance des topics
-# ------------------------------------------------------------------------------
 
 plot.STM( fit,
           type = "summary",
           labeltype= 'frex',
+          # topics = c(24,42),
           main= 'Importance des topics',
           n = 10
 )
 
+# sauvegarder
+# fit_0 <- fit
 
-topic_corr = topicCorr(fit, method = "simple", cutoff = 0.01)
+# ------------------------------------------------------------------------------
+# Correlation des topics
+# ------------------------------------------------------------------------------
+
+topic_corr = topicCorr(fit, method = "simple", cutoff = 0.1)
 plot(topic_corr, topics = c())
 
 # ------------------------------------------------------------------------------
 # Qualité des topics
 # ------------------------------------------------------------------------------
 topicQuality(model=fit, documents=out$documents, main='Topic Quality',bty="n")
-#
-plot(fit, labeltype=c("frex"), main = 'Topic Most Frequent Words',bty="n", n= 5)
 
+plot(fit, labeltype=c("frex"), main = 'Topic Most Frequent Words',bty="n", n= 5)
 
 # ------------------------------------------------------------------------------
 # Nuage Nuage cloud(fit, numero du topic)
 # ------------------------------------------------------------------------------
 
-cloud(fit, 27)
-
+cloud(fit, 12)
 
 # ------------------------------------------------------------------------------
 # Visualisation avec stmBrowser
 # ------------------------------------------------------------------------------
 
-stmBrowser(fit, data=out$meta, c("journal", "rubrique"), text="content", labeltype='frex', n = 4)
-
+stmBrowser(fit, data=out$meta, c("journal"), text="content", labeltype='frex', n = 4)
 
 # ------------------------------------------------------------------------------
 # Quels sont les documents les plus representatifs d'un topic?
 # ------------------------------------------------------------------------------
 
-
-findThoughts(fit, texts = out$meta$content, topics = 7, n = 3 )
+findThoughts(fit, texts = out$meta$content, topics = 22, n = 3 )
 
 # ------------------------------------------------------------------------------
 # Quels topics contiennent un mot ou une serie de mots
 # ------------------------------------------------------------------------------
 
-findTopic(fit, c("robot"), n = 20)
+findTopic(fit, c("facebook"), n = 20)
+
+
+# ------------------------------------------------------------------------------
+# Sauvegarder l'environnement avec toutes les variables
+# ------------------------------------------------------------------------------
+
+save.image('techno_topic_models.Rdata')
 
