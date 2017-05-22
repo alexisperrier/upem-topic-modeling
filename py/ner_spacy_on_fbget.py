@@ -1,3 +1,9 @@
+'''
+Ce script load la data file data/main_fbget.csv
+et en extrait toutes les entités a l'aide de spacy.io
+
+'''
+
 import pandas as pd
 import numpy as np
 import string
@@ -35,6 +41,7 @@ df = pd.read_csv('../data/main_fbget.csv', low_memory=False, dtype = dtypes ).sa
 print("Data loaded in {0:.2f}s".format(time.time() - start_time))
 
 # ---------------------------------------------------------------------
+#  Remove empty message, fill in empty features with 0 or blank strings
 #  NaNs, columns, length of message, pid
 # ---------------------------------------------------------------------
 print("rm NaNs, columns, names")
@@ -57,6 +64,8 @@ print(df.shape)
 
 # ----------------------------------------------------------------------------
 #  NER
+#  Load english model in Spacy
+#  memorize entities in lists: persons, GPE, ...
 # ----------------------------------------------------------------------------
 
 nlp     = spacy.load('en')
@@ -70,7 +79,8 @@ entities = []
 for i,d in df.iterrows():
 
     doc = nlp(d.message)
-
+    # PERSON, GPE, NORP and ORG are stored in respective lists
+    # all other non date or numerical entity types are stored in entities
     if len(doc.ents) > 0:
         for ent in doc.ents:
             if ent.label_ == 'PERSON':

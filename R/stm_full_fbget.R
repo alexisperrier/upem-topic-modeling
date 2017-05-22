@@ -179,7 +179,7 @@ cloud(fit, 8)
 # Visualisation avec stmBrowser
 # ------------------------------------------------------------------------------
 
-stmBrowser(fit, data=out$meta,  c("memewar", "nazi","europe"), text="message", labeltype='frex', n = 4)
+stmBrowser(fit, data=out$meta,  c("memewar", "nazi","europe"), text="display_message", labeltype='frex', n = 4)
 
 # ------------------------------------------------------------------------------
 # Quels sont les documents les plus representatifs d'un topic?

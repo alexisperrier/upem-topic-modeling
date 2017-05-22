@@ -16,8 +16,8 @@ library('SnowballC')
 library('GetoptLong')
 
 # activer pour charger l'environnement
-# load('techno_topic_models.Rdata')
-# fit <- fit_20
+load('techno_topic_models.Rdata')
+fit <- fit_20
 
 qq.options("cat_prefix" = function(x) format(Sys.time(), "\n[%H:%M:%S] "))
 
