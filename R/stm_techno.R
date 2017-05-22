@@ -3,7 +3,12 @@
 #  You will need to install the following packages
 # ------------------------------------------------------------------------------
 
-# install.packages(  c("stm", "tm", "stmBrowser", 'wordcloud',  "stringr",'igraph',  "RColorBrewer",'Rtsne','SnowballC','GetoptLong'), dependencies = TRUE)
+install.packages(  
+  c("stm", "tm", "stmBrowser", 'wordcloud',  
+    "stringr",'igraph',  "RColorBrewer",
+    'Rtsne','SnowballC','GetoptLong'), dependencies = TRUE
+)
+
 
 library('stringr')
 library('stm')
@@ -37,7 +42,9 @@ input_file    <- qq("@{data_path}techno.csv")
 # ------------------------------------------------------------------------------
 qqcat("Load data from @{input_file}")
 
-df        <- read.csv(input_file)
+df  <- read.csv(input_file)
+
+dim(df)
 
 # les 2 premiere lignes
 df[1:2,]
@@ -94,7 +101,7 @@ meta$rubrique <- as.factor(meta$rubrique)
 # ------------------------------------------------------------------------------
 
 
-n_topics = seq(from = 20, to = 50, by = 1)
+n_topics = seq(from = 20, to = 50, by = 5)
 
 gridsearch <- searchK(out$documents, out$vocab,
                       K = n_topics,
@@ -123,7 +130,7 @@ text(gridsearch$results$semcoh, gridsearch$results$exclus, labels=gridsearch$res
 #  max.em.its: nombre maximal d'iterations
 # ------------------------------------------------------------------------------
 qqcat("fit stm\n")
-fit <- stm(out$documents, out$vocab, 0,
+fit <- stm(out$documents, out$vocab, 3,
             prevalence  =~ journal + rubrique,
             data        = meta,
             reportevery = 10,
@@ -140,7 +147,7 @@ qqcat("stm done\n")
 #  Frex, ... sont differentes façon d'associer les mots dans les topics
 #  En general je choisi Frex ou ...
 # ------------------------------------------------------------------------------
-print( labelTopics(fit, n=10) )
+print( labelTopics(fit, n=8) )
 
 # ------------------------------------------------------------------------------
 # Importance des topics
@@ -149,7 +156,6 @@ print( labelTopics(fit, n=10) )
 plot.STM( fit,
           type = "summary",
           labeltype= 'frex',
-          # topics = c(24,42),
           main= 'Importance des topics',
           n = 10
 )
@@ -175,26 +181,25 @@ plot(fit, labeltype=c("frex"), main = 'Topic Most Frequent Words',bty="n", n= 5)
 # Nuage Nuage cloud(fit, numero du topic)
 # ------------------------------------------------------------------------------
 
-cloud(fit, 6)
+cloud(fit, 14)
 
 # ------------------------------------------------------------------------------
 # Visualisation avec stmBrowser
 # ------------------------------------------------------------------------------
 
-stmBrowser(fit, data=out$meta, c("journal"), text="content", labeltype='frex', n = 4)
+stmBrowser(fit, data=out$meta, c("journal"), text="content", labeltype='frex', n = 900)
 
 # ------------------------------------------------------------------------------
 # Quels sont les documents les plus representatifs d'un topic?
 # ------------------------------------------------------------------------------
 
-findThoughts(fit, texts = out$meta$content, topics = 22, n = 3 )
+findThoughts(fit, texts = out$meta$content, topics = 19, n = 3 )
 
 # ------------------------------------------------------------------------------
 # Quels topics contiennent un mot ou une serie de mots
 # ------------------------------------------------------------------------------
 
-findTopic(fit, c("facebook"), n = 20)
-
+findTopic(fit, c("autonomous"), n = 20)
 
 # ------------------------------------------------------------------------------
 # Sauvegarder l'environnement avec toutes les variables

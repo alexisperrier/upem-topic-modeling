@@ -14,7 +14,7 @@ library('SnowballC')
 library('GetoptLong')
 
 qq.options("cat_prefix" = function(x) format(Sys.time(), "\n[%H:%M:%S] "))
-
+load('fbget_stm_ready_full_01.Rdata')
 # ------------------------------------------------------------------------------
 #  Initialize working directory
 #  set file path
@@ -179,7 +179,7 @@ cloud(fit, 8)
 # Visualisation avec stmBrowser
 # ------------------------------------------------------------------------------
 
-stmBrowser(fit, data=out$meta,  c("memewar", "nazi","europe"), text="display_message", labeltype='frex', n = 4)
+stmBrowser(fit, data=out$meta,  c("memewar", "nazi","europe"), text="display_message", labeltype='frex', n = 1000)
 
 # ------------------------------------------------------------------------------
 # Quels sont les documents les plus representatifs d'un topic?
