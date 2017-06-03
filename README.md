@@ -4,26 +4,42 @@ Cours sur le topic modeling - UPEM - Master Méthode computationnelle et analyse
 ## I: Topic Modeling
 
 * Nature et applications
-* Approche deterministe: LSA
+* Approche Deterministe: LSA
 * Approche Probabiliste: LDA
-* Librairies en R et python
+* Quelques librairies en R et python
 
 ## II: Le package STM en R
 
 * Parametres
-* Metriques exclusivité et coherence semantique
+* Métriques: exclusivité et cohérence sémantique
 * Appliqué a un corpus propre
+
+## LAB - R STM
+
+* Le corpus: résumés d'articles tech, IEEE et Arstechnica
+* Le package STM en R
+* Comment determiner le nombre optimal de topics?
+* Comment interpreter les résultats?
+* Jupyter Notebook et Script R
 
 ## III: forum Alt-right sur Facebook
 
+* 500.000 commentaires provenant du forum alt-right God Trump Emperor
 * De la nécessité de travailler le contenu
-* POS
-* NER
-
+* Filtrer le bruit avec
+    * Lemmatization, tokenization
+    * Part of Speech tagging
+    * Named entity recognition
+* Jupyter Notebook et Script R
 
 ## IV: Application au Francais
 
-* POS
-* Tokenization
-* Lemmatization
+* Quelles sont les librairies pour:
+    * Part of Speech
+    * Tokenization
+    * Lemmatization
+
+## V: Resources
+
+* Articles et blogs
 
